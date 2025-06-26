@@ -120,8 +120,8 @@ int main()
     SphereVAO.Bind();
     VBO SphereVBO(&sphere.vertices[0], sphere.vertices.size() * sizeof(float));
     EBO SphereEBO(&sphere.indices[0], sphere.indices.size() * sizeof(int));
-    SphereVAO.SetAttribute(SphereVBO, 0, 3, GL_FLOAT, sizeof(GL_FLOAT) * 6, (void *)0);
-    SphereVAO.SetAttribute(SphereVBO, 1, 3, GL_FLOAT, sizeof(GL_FLOAT) * 6, (void *)(sizeof(GL_FLOAT) * 3));
+    SphereVAO.SetAttribute(&SphereVBO, 0, 3, GL_FLOAT, sizeof(GL_FLOAT) * 6, (void *)0);
+    SphereVAO.SetAttribute(&SphereVBO, 1, 3, GL_FLOAT, sizeof(GL_FLOAT) * 6, (void *)(sizeof(GL_FLOAT) * 3));
 
     SphereVAO.Unbind();
     SphereVBO.Unbind();

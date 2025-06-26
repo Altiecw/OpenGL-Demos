@@ -3,36 +3,39 @@
 
 #include <GL/glew.h>
 
-/*  A Vertex Buffer Object (VBO) is an OpenGL object which holds a list of vertices and then binds them to OpenGL so
-    they'll be drawn when a command is ran to draw what is in the buffer such as glDrawArrays() or glDrawElements() */
-class VBO
+class BO 
 {
-  private:
+protected:
     GLuint id;
+public:
+    virtual ~BO();
+    virtual void Bind();
+    virtual void Unbind();
+    virtual void Delete();
+};
 
+/*  
+    A Vertex Buffer Object (VBO) is an OpenGL object which holds a list of vertices and then binds them to OpenGL so
+    they'll be drawn when a command is ran to draw what is in the buffer such as glDrawArrays() or glDrawElements() 
+*/
+class VBO : public BO
+{
   public:
     // Creates a Vertex Buffer Object (VBO) for the given vertices
     VBO(GLfloat *vertices, GLsizeiptr size);
-    void Bind();
-    void Unbind();
-    void Delete();
 };
 
 /*
     An Element Buffer Object (EBO) is an OpenGL object which holds a list of indices. Used with a VAO and VBO, it tells
     OpenGL the order of vertices in the buffer to draw
  */
-class EBO
+class EBO : public BO
 {
-  private:
-    GLuint id;
-
   public:
     // Creates an Element Buffer Object (EBO) for the given indices
     EBO(GLuint *indices, GLsizeiptr size);
-    void Bind();
-    void Unbind();
-    void Delete();
+    virtual void Bind() override;
+    virtual void Unbind() override;
 };
 
 /*
@@ -48,7 +51,7 @@ class VAO
   public:
     // Creates a Vertex Array Object (VBO) for the given vertices
     VAO();
-    void SetAttribute(VBO vbo, GLuint layout, GLuint components, GLenum type, GLsizei stride, void *offset);
+    void SetAttribute(VBO* vbo, GLuint layout, GLuint components, GLenum type, GLsizei stride, void *offset);
     void Bind();
     void Unbind();
     void Delete();
