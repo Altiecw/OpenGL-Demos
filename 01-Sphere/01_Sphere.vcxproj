@@ -72,7 +72,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)/include;$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)Output\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
@@ -136,17 +136,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BufferObjects.cpp" />
-    <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Shader.cpp" />
-    <ClCompile Include="Shapes.cpp" />
+    <ClCompile Include="src\BufferObjects.cpp" />
+    <ClCompile Include="src\Camera.cpp" />
+    <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="src\Shader.cpp" />
+    <ClCompile Include="src\Shapes.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BufferObjects.h" />
-    <ClInclude Include="Camera.h" />
-    <ClInclude Include="Shapes.h" />
-    <ClInclude Include="Shader.h" />
+    <ClInclude Include="include\BufferObjects.h" />
+    <ClInclude Include="include\Camera.h" />
+    <ClInclude Include="include\Shapes.h" />
+    <ClInclude Include="include\Shader.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\BasicFragment.frag" />
