@@ -21,10 +21,10 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{0ACBC0CF-2B73-4C8A-BF22-5E004F02313D}</ProjectGuid>
-    <RootNamespace>_06_Camera</RootNamespace>
+    <ProjectGuid>{538a8a3a-819e-48c9-b428-490483c4cb84}</ProjectGuid>
+    <RootNamespace>_02_Materials</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>01-Sphere</ProjectName>
+    <ProjectName>02-Materials</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -141,12 +141,14 @@
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\Shapes.cpp" />
+    <ClCompile Include="src\Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\BufferObjects.h" />
     <ClInclude Include="include\Camera.h" />
     <ClInclude Include="include\Shapes.h" />
     <ClInclude Include="include\Shader.h" />
+    <ClInclude Include="include\Texture.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\BasicFragment.frag" />
