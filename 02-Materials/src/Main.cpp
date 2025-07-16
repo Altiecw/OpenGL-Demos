@@ -1,16 +1,21 @@
 #include "BufferObjects.h"
 #include "Camera.h"
+#include "Light.h"
+#include "Material.h"
 #include "Shader.h"
 #include "Shapes.h"
 #include "Texture.h"
 
+#include <chrono>
+#include <filesystem>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include <sys/stat.h>
 
 const int initWidth = 640;
 const int initHeight = 640;
-const char *initName = "Sphere Demo";
+const char *initName = "Material Demo";
 
 bool isFullscreen = false;
 int displayMonitor = 1;
@@ -23,6 +28,15 @@ GLFWmonitor **monitors;
 float DeltaTime = 0;
 float LastTime = 0;
 Camera *camera;
+
+std::string ScreenshotDirectory;
+std::string RecordingDirectory;
+bool isRecording = false;
+int recordedImages = 0;
+
+std::vector<std::pair<std::string, std::string>> ShaderSources;
+std::vector<Shader> Shaders;
+int selectedShader = 0;
 
 const char* colourTextureSource = "Textures/Earth8kDaymap.jpg";
 
@@ -72,14 +86,9 @@ int main()
         monitorVMode = glfwGetVideoMode(monitors[displayMonitor]);
         glfwSetWindowMonitor(window, monitors[displayMonitor], 0, 0, monitorVMode->width, monitorVMode->height,
                              monitorVMode->refreshRate);
-    }
-
-    if (isFullscreen)
-    {
         glViewport(0, 0, monitorVMode->width, monitorVMode->height);
     }
-    else
-    {
+    else {
         glViewport(0, 0, windowSize[0], windowSize[1]);
     }
 
@@ -92,11 +101,18 @@ int main()
 
     std::cout << "Setting up shaders" << std::endl;
 
-    Shader BasicShader;
-    if (!BasicShader.Init("Shaders/BasicVertex.vert", "Shaders/BasicFragment.frag"))
+    ShaderSources.push_back(std::pair<std::string, std::string>("Shaders/BlinnPhong.vert", "Shaders/BlinnPhong.frag"));
+    ShaderSources.push_back(std::pair<std::string, std::string>("Shaders/PositionColour.vert", "Shaders/PositionColour.frag"));
+    
+    for (int i = 0; i < ShaderSources.size(); ++i) 
     {
-        std::cout << "Failed to setup shaders" << std::endl;
-        return -1;
+        Shader newShader;
+        if (!newShader.Init(ShaderSources[i].first.c_str(), ShaderSources[i].second.c_str()))
+        {
+            std::cout << "Failed to setup shaders for" << ShaderSources[i].first << " and " << ShaderSources[i].second << std::endl;
+            return -1;
+        }
+        Shaders.push_back(newShader);
     }
 
     std::cout << "Setting up camera" << std::endl;
@@ -114,11 +130,27 @@ int main()
 
     std::cout << "Creating shapes" << std::endl;
     Sphere sphere;
-    sphere.GenerateLatLongSphere_PNU(16, 1.0f);
+    sphere.GenerateLatLongSphere_PNU(64, 1.0f);
 
     glm::mat4 model(1.0f);
     model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
     float sphereRotateSpeed = 10.0f;
+
+    PointLight light;
+    light.Position = glm::vec3(3.0f, 0, 0);
+    light.Colour = glm::vec3(1.0f, 1.0f, 1.0f);
+
+    std::cout << "Setting up Materials" << std::endl;
+
+    Material Earth;
+
+    Earth.Ambient = glm::vec3(1.0f, 1.0f, 1.0f);
+    Earth.Diffuse = glm::vec3(1, 1, 1);
+    Earth.Specular = glm::vec3(1, 1, 1);
+    Earth.DiffuseTexture = 0;
+    Earth.Shininess = 32;
+
+    Materials[0] = Earth;
 
     std::cout << "Setting up buffers" << std::endl;
 
@@ -154,31 +186,51 @@ int main()
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        BasicShader.Activate();
+        Shaders[selectedShader].Activate();
 
         model = glm::rotate(model, glm::radians(sphereRotateSpeed * DeltaTime), glm::vec3(0, 1, 0));
-        BasicShader.SetMat4("model", model);
-        BasicShader.SetMat4("view", camera->GetViewMatrix());
-        BasicShader.SetMat4("projection", camera->GetProjectionMatrix());
-        BasicShader.SetInt("colourTexture", colourTexture.unit);
+        Shaders[selectedShader].SetMat4("model", model);
+        Shaders[selectedShader].SetMat3("modelNormal", glm::mat3(glm::transpose(glm::inverse(model))));
+        Shaders[selectedShader].SetMat4("view", camera->GetViewMatrix());
+        Shaders[selectedShader].SetMat4("projection", camera->GetProjectionMatrix());
+        Shaders[selectedShader].SetVec3("camPos", camera->Position);
+
+        Shaders[selectedShader].SetVec3("Materials[0].Ambient", Materials[0].Ambient);
+        Shaders[selectedShader].SetVec3("Materials[0].Diffuse", Materials[0].Diffuse);
+        Shaders[selectedShader].SetInt("Materials[0].DiffuseTexture", colourTexture.unit);
+        Shaders[selectedShader].SetVec3("Materials[0].Specular", Materials[0].Specular);
+        Shaders[selectedShader].SetFloat("Materials[0].Shininess", Materials[0].Shininess);
+        Shaders[selectedShader].SetInt("MatIndex", 0);
+        Shaders[selectedShader].SetFloat("ambience", 0.1f);
+        Shaders[selectedShader].SetVec3("lightColour", light.Colour);
+        Shaders[selectedShader].SetVec3("lightPos", light.Position);
+       
 
         colourTexture.Bind();
         SphereVAO.Bind();
         glDrawElements(GL_TRIANGLES, sphere.indices.size() * sizeof(int), GL_UNSIGNED_INT, 0);
         SphereVAO.Unbind();
 
+        if (isRecording) {
+            Screenshot(windowSize[0], windowSize[1],(RecordingDirectory + std::to_string(recordedImages) + ".png").c_str());
+            ++recordedImages;
+        }
+
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
     SphereVAO.Delete();
-    BasicShader.Delete();
-
+    for (Shader shader : Shaders) {
+        shader.Delete();
+    }
     glfwTerminate();
     return 0;
 }
 
 bool fullscreen_pressed[] = {false, false};
+bool changeshaders_pressed[] = { false, false };
+bool recording_pressed[] = {false, false};
 void processInput(GLFWwindow *window)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -220,6 +272,48 @@ void processInput(GLFWwindow *window)
     {
         glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
     }
+
+    changeshaders_pressed[0] = glfwGetKey(window, GLFW_KEY_LEFT_BRACKET) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_RIGHT_BRACKET) == GLFW_PRESS;
+    if (changeshaders_pressed[0] && changeshaders_pressed[0] != changeshaders_pressed[1]) {
+        if (glfwGetKey(window, GLFW_KEY_LEFT_BRACKET) == GLFW_PRESS)
+        {
+            selectedShader = (selectedShader - 1) % Shaders.size();
+        }
+        else if (glfwGetKey(window, GLFW_KEY_RIGHT_BRACKET) == GLFW_PRESS)
+        {
+            selectedShader = (selectedShader + 1) % Shaders.size();
+        }
+    }
+    changeshaders_pressed[1] = changeshaders_pressed[0];
+
+    if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
+        Screenshot(windowSize[0], windowSize[1], "Screenshot/output.png");
+    }
+
+    recording_pressed[0] = glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS;
+    if (recording_pressed[0] && recording_pressed[0] != recording_pressed[1])
+    {
+        isRecording = !isRecording;
+
+        if (isRecording) {
+            
+            struct tm timenow;
+
+            time_t now = time(NULL);
+            gmtime_s(&timenow, &now);
+            char date[26];
+            strftime(date, sizeof(date), "%Y-%m-%d_%H-%M-%S", &timenow);
+
+            std::string directory("Screenshot/");
+            directory.append(date);
+
+            if (!std::filesystem::exists(directory)) std::filesystem::create_directory(directory);
+
+            RecordingDirectory = directory + "/";
+            recordedImages = 0;
+        }
+    }
+    recording_pressed[1] = recording_pressed[0];
 
     camera->ProcessInputs(window, DeltaTime);
 }

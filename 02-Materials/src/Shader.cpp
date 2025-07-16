@@ -28,7 +28,7 @@ bool Shader::InitInternal(const char *vertexShader, const char *fragmentShader)
     if (result == 0)
     {
         char ErrorResults[512];
-        glGetShaderInfoLog(VertexShader, 512, NULL, ErrorResults);
+        glGetShaderInfoLog(FragmentShader, 512, NULL, ErrorResults);
         std::cout << "Error in fragment shader compilation: " << ErrorResults << std::endl;
         return false;
     }
@@ -113,17 +113,32 @@ void Shader::SetBool(std::string name, bool value)
     glUniform1i(glGetUniformLocation(id, name.c_str()), (int)value);
 }
 
-void Shader::SetInt(std::string name, int value)
-{
-    glUniform1i(glGetUniformLocation(id, name.c_str()), value);
-}
-
 void Shader::SetFloat(std::string name, float value)
 {
     glUniform1f(glGetUniformLocation(id, name.c_str()), value);
 }
 
+void Shader::SetInt(std::string name, int value)
+{
+    glUniform1i(glGetUniformLocation(id, name.c_str()), value);
+}
+
+void Shader::SetMat3(std::string name, glm::mat3 value)
+{
+    glUniformMatrix3fv(glGetUniformLocation(id, name.c_str()), 1, false, &value[0][0]);
+}
+
 void Shader::SetMat4(std::string name, glm::mat4 value)
 {
     glUniformMatrix4fv(glGetUniformLocation(id, name.c_str()), 1, false, &value[0][0]);
+}
+
+void Shader::SetVec3(std::string name, glm::vec3 value)
+{
+    glUniform3f(glGetUniformLocation(id, name.c_str()), value.x, value.y, value.z);
+}
+
+void Shader::SetVec3(std::string name, float x, float y, float z)
+{
+    glUniform3f(glGetUniformLocation(id, name.c_str()), x, y, z);
 }

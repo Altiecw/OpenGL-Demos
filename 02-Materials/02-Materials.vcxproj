@@ -72,7 +72,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(ProjectDir)/include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)include;$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)Output\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
@@ -111,6 +111,7 @@
       <PreprocessorDefinitions>GLEW_STATIC;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(OpenGL)includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -146,13 +147,17 @@
   <ItemGroup>
     <ClInclude Include="include\BufferObjects.h" />
     <ClInclude Include="include\Camera.h" />
+    <ClInclude Include="include\Material.h" />
     <ClInclude Include="include\Shapes.h" />
     <ClInclude Include="include\Shader.h" />
     <ClInclude Include="include\Texture.h" />
+    <ClInclude Include="include\Light.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\BasicFragment.frag" />
-    <None Include="Shaders\BasicVertex.vert" />
+    <None Include="Shaders\PositionColour.frag" />
+    <None Include="Shaders\PositionColour.vert" />
+    <None Include="Shaders\BlinnPhong.frag" />
+    <None Include="Shaders\BlinnPhong.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

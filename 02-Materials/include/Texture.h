@@ -10,4 +10,6 @@ public:
 	void Unbind();
 };
 
+void Screenshot(const int width, const int height, const char* name);
+
 #endif

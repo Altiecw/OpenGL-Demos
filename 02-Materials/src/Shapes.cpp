@@ -150,10 +150,11 @@ void Sphere::GenerateLatLongSphere_PNU(int resolution, float radius)
             x = xz * sin(LongAngle);
             z = xz * cos(LongAngle);
 
-            if (j == resolution * 2) {
-                z *= 1.1f;
+            /*if (j == resolution * 2) { // Show seam
                 x *= 1.1f;
-            }
+                y *= 1.1f;
+                z *= 1.1f;
+            }*/
 
             vertices.push_back(x * radius);
             vertices.push_back(y * radius);
@@ -195,88 +196,15 @@ void Sphere::GenerateLatLongSphere_PNU(int resolution, float radius)
                 indices.push_back(j * notLast + i * (resolution * 2 + 1) + notLast);
                 indices.push_back(j + (i + notLast) * (resolution * 2 + 1) + 1);
                 triangles += 2;
-            } else
+            } 
+            else
             {
                 int South = i == resolution - 1;
                 indices.push_back(j + i * (resolution * 2 + 1) * South);
                 indices.push_back(j + (i * South + 1) * (resolution * 2 + 1));
                 indices.push_back((South) ? j * notLast + i * (resolution * 2 + 1) + notLast : j + notLast * (resolution * 2 + 1) + 1);
-                //indices.push_back(j * (1 - South) + j * notLast * South + i * (resolution * 2 + 1) + notLast + (1 - South));
-                /*if (South) 
-                {
-                    indices.push_back(j * notLast + i * (resolution * 2 + 1) + notLast);
-                } 
-                else
-                {
-                    indices.push_back(j + notLast * (resolution * 2 + 1) + 1);
-                }*/
-            }
-           /* else if (i == 0) 
-            {
-                indices.push_back(j);
-                indices.push_back(j + resolution * 2 + 1);
-                indices.push_back(j + notLast * (resolution * 2 + 1) + 1);
                 ++triangles;
             }
-            else if (i == resolution - 1) 
-            {
-                indices.push_back(j + i * (resolution * 2 + 1));
-                indices.push_back(j + (i + 1) * (resolution * 2 + 1));
-                indices.push_back(j * notLast + i * (resolution * 2 + 1) + notLast);
-                ++triangles;
-            }*/
-
-            /*if (i > 0 && i < resolution - 1)
-            {
-                if (j < resolution * 2) {
-                    indices.push_back(j + i * (resolution * 2 + 1));
-                    indices.push_back(j + (i + 1) * (resolution * 2 + 1));
-                    indices.push_back(j + i * (resolution * 2 + 1) + 1);
-
-                    indices.push_back(j + (i + 1) * (resolution * 2 + 1));
-                    indices.push_back(j + i * (resolution * 2 + 1) + 1);
-                    indices.push_back(j + (i + 1) * (resolution * 2 + 1) + 1);
-                }
-                else {
-                    indices.push_back(j + i * (resolution * 2 + 1));
-                    indices.push_back(j + (i + 1) * (resolution * 2 + 1));
-                    indices.push_back(i * (resolution * 2 + 1));
-
-                    indices.push_back(j + (i + 1) * (resolution * 2 + 1));
-                    indices.push_back(i * (resolution * 2 + 1));
-                    indices.push_back(j + i * (resolution * 2 + 1) + 1);
-                }
-
-            }
-            else if (i == 0) {
-                if (j < resolution * 2) {
-                    indices.push_back(j);
-                    indices.push_back(j + resolution * 2 + 1);
-                    indices.push_back(j + resolution * 2 + 2);
-                    ++triangles;
-                }
-                else {
-                    indices.push_back(j);
-                    indices.push_back(j + resolution * 2 + 1);
-                    indices.push_back(j + 1);
-                    ++triangles;
-                }
-
-            }
-            else if (i == resolution - 1) {
-                if (j < resolution * 2) {
-                    indices.push_back(j + i * (resolution * 2 + 1));
-                    indices.push_back(j + (i + 1) * (resolution * 2 + 1));
-                    indices.push_back(j + i * (resolution * 2 + 1) + 1);
-                    ++triangles;
-                }
-                else {
-                    indices.push_back(j + i * (resolution * 2 + 1));
-                    indices.push_back(j + (i + 1) * (resolution * 2 + 1));
-                    indices.push_back(i * (resolution * 2 + 1));
-                    ++triangles;
-                }
-            }*/
 
             ++index;
         }

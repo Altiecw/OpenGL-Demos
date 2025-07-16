@@ -12,7 +12,7 @@ const int initHeight = 640;
 const char *initName = "Sphere Demo";
 
 bool isFullscreen = false;
-int displayMonitor = 1;
+int displayMonitor = 2;
 int monitorCount;
 int windowPosition[] = {0, 0};
 int windowSize[] = {0, 0};

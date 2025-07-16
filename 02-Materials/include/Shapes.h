@@ -30,7 +30,7 @@ protected:
   public:
     std::vector<unsigned int> indices;
     std::vector<float> vertices;
-    float triangles = 0;
+    int triangles = 0;
     unsigned int *GetIndices();
     float *GetVertices();
     // Generates a sphere vertices containing position and normal

@@ -1,5 +1,8 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <STB/stb_image.h>
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#define __STDC_LIB_EXT1__ 1
+#include <STB/stb_image_write.h>
 #include <GL/glew.h>
 
 #include "Texture.h"
@@ -46,4 +49,16 @@ void Texture::Bind(int slot)
 void Texture::Unbind() 
 {
 	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void Screenshot(const int width, const int height, const char* name) {
+
+	GLubyte* data = new GLubyte[width * height * 4];
+
+	glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, data);
+	stbi_flip_vertically_on_write(true);
+
+	stbi_write_png(name, width, height, 4, data, width * 4);
+
+	delete[] data;
 }

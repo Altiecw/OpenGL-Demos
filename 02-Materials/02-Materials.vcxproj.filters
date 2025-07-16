@@ -36,10 +36,16 @@
     <ClInclude Include="include\Texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\Light.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Material.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\BasicFragment.frag" />
-    <None Include="Shaders\BasicVertex.vert" />
+    <None Include="Shaders\BlinnPhong.frag" />
+    <None Include="Shaders\BlinnPhong.vert" />
+    <None Include="Shaders\PositionColour.vert" />
+    <None Include="Shaders\PositionColour.frag" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">
